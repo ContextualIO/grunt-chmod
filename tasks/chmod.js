@@ -12,6 +12,42 @@ var shelljs = require('shelljs');
 
 module.exports = function(grunt) {
 
+  var createLogErrorFunc = function(shouldEmit) {
+    if (shouldEmit) {
+      return function(errorMsg) {
+        grunt.event.emit('chmod.error', errorMsg);
+        grunt.log.error(errorMsg);
+      };
+    }
+    return function(errorMsg) {
+      grunt.log.error(errorMsg);
+    };
+  };
+
+  var createTaskFailureFunc = function(shouldEmit) {
+    if (shouldEmit) {
+      return function() {
+        grunt.event.emit('chmod.fail');
+        return false;
+      };
+    }
+    return function() {
+      return false;
+    };
+  };
+
+  var createTaskSuccessFunc = function(shouldEmit) {
+    if (shouldEmit) {
+      return function() {
+        grunt.event.emit('chmod.success');
+        return true;
+      };
+    }
+    return function() {
+      return true;
+    };
+  };
+
   // Please see the Grunt documentation for more information regarding task
   // creation: http://gruntjs.com/creating-tasks
 
@@ -72,41 +108,5 @@ module.exports = function(grunt) {
     grunt.log.ok(files.length + ' file' + (files.length === 1 ? '' : 's') + ' had their `chmod` mode set to "' + mode + '".');
     return taskSuccess();
   });
-
-  var createLogErrorFunc = function(shouldEmit) {
-    if (shouldEmit) {
-      return function(errorMsg) {
-        grunt.event.emit('chmod.error', errorMsg);
-        grunt.log.error(errorMsg);
-      };
-    }
-    return function(errorMsg) {
-      grunt.log.error(errorMsg);
-    };
-  };
-
-  var createTaskFailureFunc = function(shouldEmit) {
-    if (shouldEmit) {
-      return function() {
-        grunt.event.emit('chmod.fail');
-        return false;
-      };
-    }
-    return function() {
-      return false;
-    };
-  };
-
-  var createTaskSuccessFunc = function(shouldEmit) {
-    if (shouldEmit) {
-      return function() {
-        grunt.event.emit('chmod.success');
-        return true;
-      };
-    }
-    return function() {
-      return true;
-    };
-  };
 
 };
